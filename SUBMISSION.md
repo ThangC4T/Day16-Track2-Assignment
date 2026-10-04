@@ -63,7 +63,16 @@ The AWS compute node reported:
 - `aws_node_run.sh`: helper script used to run the AWS benchmark on the private compute node.
 - `aws_benchmark_result.json`: measured AWS benchmark output.
 - `LAB16_AWS_REPORT.md`: short written AWS report.
-- `kaggle_lab16_benchmark.ipynb`: fallback notebook retained for reproducibility if cloud account access is unavailable.
+- `evidence/`: screenshots for benchmark output, JSON result, resource evidence, cleanup evidence, and AWS Console state after destroy.
+
+## Evidence Files
+
+- `evidence/01_submission_environment.png`
+- `evidence/02_submission_benchmark_table.png`
+- `evidence/03_aws_benchmark_result_json.png`
+- `evidence/04_submission_resource_evidence.png`
+- `evidence/05_terraform_state_empty_after_destroy.png`
+- `evidence/07_ec2_after_destroy.png`
 
 ## Short Report
 
