@@ -72,7 +72,10 @@ The AWS compute node reported:
 - `evidence/03_aws_benchmark_result_json.png`
 - `evidence/04_submission_resource_evidence.png`
 - `evidence/05_terraform_state_empty_after_destroy.png`
+- `evidence/06_aws_billing_cost.png`
 - `evidence/07_ec2_after_destroy.png`
+
+The billing screenshot was taken shortly after cleanup. AWS Billing notes that estimated credit and cost values can take time to update, so this evidence is included together with the Terraform destroy and EC2-after-destroy screenshots to show both billing status and cleanup.
 
 ## Short Report
 
