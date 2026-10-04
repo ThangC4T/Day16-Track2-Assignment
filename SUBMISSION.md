@@ -1,16 +1,30 @@
-# Lab 16 Submission - Cloud AI CPU Benchmark
+# Lab 16 Submission - AWS Cloud AI CPU Benchmark
 
 ## Execution Environment
 
-- Platform: Kaggle Notebook CPU
-- Accelerator: None
-- CPU count: 4
-- Memory: 32,869,444 kB total
+- Cloud provider: AWS
+- Region: `us-east-1` / United States (N. Virginia)
+- Infrastructure as Code: Terraform
+- Bastion host: `t3.micro`
+- Compute node: `t3.medium` CPU instance in a private subnet
 - Dataset: Credit Card Fraud Detection (`mlg-ulb/creditcardfraud`)
-- Dataset path: `/kaggle/input/datasets/mlg-ulb/creditcardfraud/creditcard.csv`
-- Output file: `benchmark_result.json`
+- Dataset path on AWS node: `/home/ubuntu/ml-benchmark/creditcard.csv`
+- Output file: `aws_benchmark_result.json`
 
-AWS account verification and Oracle Cloud sign-up were blocked during setup, so the benchmark was completed on Kaggle Notebook, a free managed cloud notebook environment. This preserves the core Lab 16 CPU benchmark objective without using GPU or paid cloud resources.
+The AWS infrastructure was deployed with Terraform, benchmarked on the private CPU compute node, and then destroyed successfully to avoid ongoing cost. The Terraform destroy completed with `Resources: 27 destroyed`.
+
+## AWS Terraform Outputs
+
+These were the outputs after `terraform apply`:
+
+| Output | Value |
+|---|---|
+| `bastion_public_ip` | `3.235.51.109` |
+| `gpu_private_ip` | `10.0.10.62` |
+| `alb_dns_name` | `ai-inference-alb-eac03583-986875896.us-east-1.elb.amazonaws.com` |
+| `endpoint_url` | `http://ai-inference-alb-eac03583-986875896.us-east-1.elb.amazonaws.com/v1/completions` |
+
+`gpu_private_ip` is the shared output name from the Terraform template; in the required CPU path it refers to the private CPU LightGBM compute node.
 
 ## Benchmark Results
 
@@ -19,34 +33,38 @@ AWS account verification and Oracle Cloud sign-up were blocked during setup, so 
 | Rows | 284,807 |
 | Fraud rows | 492 |
 | Fraud rate | 0.00172749 |
-| Load data time | 2.220287 seconds |
-| Training time | 1.504332 seconds |
+| Load data time | 2.470128 seconds |
+| Training time | 2.050067 seconds |
 | Best iteration | 1 |
 | AUC-ROC | 0.922938 |
 | Accuracy | 0.998122 |
 | F1-score | 0.60223 |
 | Precision | 0.473684 |
 | Recall | 0.826531 |
-| Inference latency, 1 row | 1.845587 ms |
-| Inference throughput, 1000 rows | 438,788.943 rows/second |
+| Inference latency, 1 row | 1.39045 ms |
+| Inference throughput, 1000 rows | 555,555.556 rows/second |
+
+## Resource Evidence
+
+The AWS compute node reported:
+
+| Resource | Value |
+|---|---:|
+| CPU count | 2 |
+| Memory total | 3.7 GiB |
+| Memory available | 3.2 GiB |
+| Network RX bytes | 279,571,846 |
+| Network TX bytes | 912,343 |
 
 ## Submitted Files
 
+- `terraform/`: AWS Terraform infrastructure source.
 - `benchmark.py`: standalone benchmark script for the CPU LightGBM workflow.
-- `kaggle_lab16_benchmark.ipynb`: Kaggle notebook used for the free cloud run.
-- `benchmark_result.json`: measured benchmark output.
-- `LAB16_KAGGLE_REPORT.md`: short written report.
-- `KAGGLE_FREE_RUN_GUIDE.md`: reproducible Kaggle run guide.
-
-## Evidence Screenshots
-
-The captured screenshots show:
-
-- LightGBM benchmark output with all required metrics.
-- `benchmark_result.json` printed from `/kaggle/working`.
-- Resource evidence with 4 CPU cores and memory information.
-- Kaggle notebook settings showing accelerator set to `None`.
+- `aws_node_run.sh`: helper script used to run the AWS benchmark on the private compute node.
+- `aws_benchmark_result.json`: measured AWS benchmark output.
+- `LAB16_AWS_REPORT.md`: short written AWS report.
+- `kaggle_lab16_benchmark.ipynb`: fallback notebook retained for reproducibility if cloud account access is unavailable.
 
 ## Short Report
 
-Because AWS account verification and Oracle Cloud sign-up were blocked, I completed the CPU benchmark on Kaggle Notebook, a free managed cloud notebook environment. I used the Credit Card Fraud Detection dataset with 284,807 transactions and trained a LightGBM binary classifier to detect fraudulent transactions. The benchmark measured data loading time, training time, AUC-ROC, Accuracy, F1-score, Precision, Recall, single-row inference latency, and 1000-row inference throughput. The model achieved AUC-ROC = 0.922938, Accuracy = 0.998122, F1-score = 0.60223, Precision = 0.473684, and Recall = 0.826531. Training took 1.504332 seconds, single-row inference latency was 1.845587 ms, and 1000-row throughput was 438,788.943 rows/second. The result was saved to `benchmark_result.json`. This path used CPU only, no GPU, and no paid cloud resources.
+I deployed the Lab 16 CPU infrastructure on AWS using Terraform in `us-east-1`. Terraform created a VPC, public and private subnets, an Internet Gateway, NAT Gateway, bastion host, Application Load Balancer, and a private `t3.medium` compute node. I connected through the bastion host to the private compute node and trained a LightGBM binary classifier on the Credit Card Fraud Detection dataset with 284,807 transactions. The model achieved AUC-ROC = 0.922938, Accuracy = 0.998122, F1-score = 0.60223, Precision = 0.473684, and Recall = 0.826531. Training took 2.050067 seconds, single-row inference latency was 1.39045 ms, and 1000-row inference throughput was 555,555.556 rows/second. After collecting the benchmark result and resource evidence, I ran `terraform destroy`, and Terraform confirmed `Resources: 27 destroyed`.
